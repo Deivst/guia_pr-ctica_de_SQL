@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Guía Completa SQL: JOINS, Window Functions y Consultas Avanzadas | Tutorial 2024</title>
+    <meta name="description" content="Aprende SQL desde cero: JOINS, Window Functions, subconsultas y más. Tutorial práctico con ejemplos reales y ejercicios para principiantes y nivel intermedio.">
+    <meta name="keywords" content="SQL, JOINS, Window Functions, subconsultas, bases de datos, tutorial SQL, SQL para principiantes">
+    <meta name="author" content="Tutorial SQL">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Open Graph tags -->
+    <meta property="og:title" content="Guía Completa SQL para Principiantes y Nivel Intermedio">
+    <meta property="og:description" content="Tutorial completo de SQL con ejemplos prácticos. Aprende JOINS, Window Functions y consultas avanzadas paso a paso.">
+    <meta property="og:type" content="article">
+    
+    <!-- Schema.org markup -->
+    <script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "Article",
+        "name": "Guía Completa SQL",
+        "description": "Tutorial comprehensivo de SQL con ejemplos prácticos",
+        "articleSection": "Programación",
+        "articleBody": "Guía completa de SQL incluyendo JOINS, Window Functions y subconsultas"
+    }
+    </script>
+
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #34495e;
+            --accent-color: #3498db;
+            --background-light: #f8f9fa;
+            --text-color: #333;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            line-height: 1.8;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            color: var(--text-color);
+            background-color: #fff;
+        }
+
+        h1, h2, h3 {
+            color: var(--primary-color);
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+            margin-top: 30px;
+        }
+
+        .code-block {
+            background-color: var(--background-light);
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid var(--accent-color);
+            margin: 20px 0;
+            font-family: 'Consolas', monospace;
+            white-space: pre;
+            overflow-x: auto;
+            font-size: 14px;
+        }
+
+        .example {
+            background-color: #e8f5e9;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .tip {
+            background-color: #fff3e0;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #ff9800;
+        }
+
+        .warning {
+            background-color: #ffebee;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #f44336;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        th, td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .nav-section {
+            background-color: var(--background-light);
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .practice-exercise {
+            background-color: #e3f2fd;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #2196f3;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Guía Completa de SQL: JOINS, Window Functions y Consultas Avanzadas</h1>
+        <nav class="nav-section">
+            <h3>Contenido</h3>
+            <ul>
+                <li><a href="#joins">JOINS en Profundidad</a></li>
+                <li><a href="#window-functions">Window Functions</a></li>
+                <li><a href="#subqueries">Subconsultas Avanzadas</a></li>
+                <li><a href="#practical">Ejercicios Prácticos</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section id="joins">
+            <h2>1. JOINS en Profundidad</h2>
+            <p>Los JOINS son fundamentales en SQL para relacionar datos entre tablas. Cada tipo de JOIN tiene un propósito específico:</p>
+
+            <div class="example">
+                <h3>Tipos de JOINS</h3>
+                <table>
+                    <tr>
+                        <th>Tipo</th>
+                        <th>Uso</th>
+                        <th>Ejemplo Común</th>
+                    </tr>
+                    <tr>
+                        <td>INNER JOIN</td>
+                        <td>Solo registros que coinciden en ambas tablas</td>
+                        <td>Ventas con información de cliente</td>
+                    </tr>
+                    <tr>
+                        <td>LEFT JOIN</td>
+                        <td>Todos los registros de la tabla izquierda</td>
+                        <td>Todos los clientes, incluso sin ventas</td>
+                    </tr>
+                    <tr>
+                        <td>RIGHT JOIN</td>
+                        <td>Todos los registros de la tabla derecha</td>
+                        <td>Todas las ventas, incluso sin cliente asociado</td>
+                    </tr>
+                    <tr>
+                        <td>FULL OUTER JOIN</td>
+                        <td>Todos los registros de ambas tablas</td>
+                        <td>Análisis completo de relaciones</td>
+                    </tr>
+                </table>
+
+                <div class="code-block">
+-- Ejemplo práctico de INNER JOIN
+SELECT 
+    c.nombre,
+    c.email,
+    v.fecha_venta,
+    v.monto,
+    p.nombre as producto
+FROM clientes c
+INNER JOIN ventas v ON c.id = v.cliente_id
+INNER JOIN productos p ON v.producto_id = p.id
+WHERE v.fecha_venta >= '2024-01-01';
+
+-- LEFT JOIN con agregación
+SELECT 
+    c.nombre,
+    COUNT(v.id) as total_ventas,
+    COALESCE(SUM(v.monto), 0) as monto_total
+FROM clientes c
+LEFT JOIN ventas v ON c.id = v.cliente_id
+GROUP BY c.id, c.nombre
+ORDER BY monto_total DESC;</div>
+            </div>
+
+            <div class="tip">
+                <h4>Consejos para JOINS</h4>
+                <ul>
+                    <li>Siempre usa alias de tabla para mejor legibilidad</li>
+                    <li>Verifica las relaciones entre tablas antes de escribir la consulta</li>
+                    <li>Considera el rendimiento con grandes conjuntos de datos</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="window-functions">
+            <h2>2. Window Functions Explicadas</h2>
+            <p>Las Window Functions permiten realizar cálculos sobre un conjunto de filas mientras mantienes el detalle de cada registro.</p>
+
+            <div class="example">
+                <h3>Funciones Principales</h3>
+                <div class="code-block">
+-- Ranking y numeración
+SELECT 
+    vendedor,
+    fecha_venta,
+    monto,
+    ROW_NUMBER() OVER (PARTITION BY vendedor ORDER BY monto DESC) as num_venta,
+    RANK() OVER (PARTITION BY vendedor ORDER BY monto DESC) as ranking,
+    DENSE_RANK() OVER (PARTITION BY vendedor ORDER BY monto DESC) as ranking_denso,
+    NTILE(4) OVER (ORDER BY monto) as cuartil
+FROM ventas;
+
+-- Agregaciones con ventana
+SELECT 
+    fecha_venta,
+    producto,
+    monto,
+    SUM(monto) OVER (ORDER BY fecha_venta) as venta_acumulada,
+    AVG(monto) OVER (PARTITION BY producto ORDER BY fecha_venta 
+        ROWS BETWEEN 3 PRECEDING AND CURRENT ROW) as promedio_movil_4dias
+FROM ventas;</div>
+
+                <div class="tip">
+                    <h4>Usos Comunes</h4>
+                    <ul>
+                        <li>Cálculo de totales acumulados</li>
+                        <li>Promedios móviles</li>
+                        <li>Rankings y percentiles</li>
+                        <li>Comparaciones con filas anteriores/posteriores</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section id="subqueries">
+            <h2>3. Subconsultas Avanzadas</h2>
+            <p>Las subconsultas son consultas anidadas que permiten operaciones complejas y filtrado avanzado.</p>
+
+            <div class="example">
+                <h3>Tipos de Subconsultas</h3>
+                <div class="code-block">
+-- Subconsulta en SELECT
+SELECT 
+    producto,
+    ventas_totales,
+    (SELECT AVG(ventas_totales) FROM resumen_ventas) as promedio_general,
+    ventas_totales - (SELECT AVG(ventas_totales) FROM resumen_ventas) as diferencia_promedio
+FROM resumen_ventas;
+
+-- Subconsulta en WHERE
+SELECT nombre, total_ventas
+FROM vendedores
+WHERE total_ventas > (
+    SELECT AVG(total_ventas) * 1.5
+    FROM vendedores
+);
+
+-- Subconsulta correlacionada
+SELECT 
+    departamento,
+    empleado,
+    salario
+FROM empleados e1
+WHERE salario > (
+    SELECT AVG(salario) * 1.2
+    FROM empleados e2
+    WHERE e1.departamento = e2.departamento
+);</div>
+            </div>
+
+            <div class="warning">
+                <h4>Consideraciones de Rendimiento</h4>
+                <ul>
+                    <li>Las subconsultas correlacionadas pueden ser lentas con grandes conjuntos de datos</li>
+                    <li>Considera usar JOINS cuando sea posible</li>
+                    <li>Optimiza las subconsultas con índices apropiados</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="practical">
+            <h2>4. Ejercicios Prácticos Integrados</h2>
+            
+            <div class="practice-exercise">
+                <h3>Ejercicio 1: Análisis de Ventas</h3>
+                <div class="code-block">
+-- Reporte completo de ventas por cliente
+WITH ventas_mensuales AS (
+    SELECT 
+        cliente_id,
+        DATE_TRUNC('month', fecha_venta) as mes,
+        SUM(monto) as venta_mensual
+    FROM ventas
+    GROUP BY cliente_id, DATE_TRUNC('month', fecha_venta)
+)
+SELECT 
+    c.nombre,
+    vm.mes,
+    vm.venta_mensual,
+    SUM(vm.venta_mensual) OVER (PARTITION BY c.id ORDER BY vm.mes) as venta_acumulada,
+    RANK() OVER (PARTITION BY vm.mes ORDER BY vm.venta_mensual DESC) as ranking_mensual,
+    AVG(vm.venta_mensual) OVER (PARTITION BY c.id 
+        ORDER BY vm.mes ROWS BETWEEN 2 PRECEDING AND CURRENT ROW) as promedio_movil_3meses
+FROM clientes c
+INNER JOIN ventas_mensuales vm ON c.id = vm.cliente_id
+ORDER BY c.nombre, vm.mes;</div>
+            </div>
+
+            <div class="practice-exercise">
+                <h3>Ejercicio 2: KPIs de Vendedores</h3>
+                <div class="code-block">
+-- Análisis de rendimiento de vendedores
+WITH metricas_vendedor AS (
+    SELECT 
+        v.vendedor_id,
+        COUNT(DISTINCT v.cliente_id) as total_clientes,
+        COUNT(*) as total_ventas,
+        SUM(v.monto) as monto_total,
+        AVG(v.monto) as ticket_promedio
+    FROM ventas v
+    GROUP BY v.vendedor_id
+)
+SELECT 
+    ve.nombre,
+    mv.total_clientes,
+    mv.total_ventas,
+    mv.monto_total,
+    mv.ticket_promedio,
+    RANK() OVER (ORDER BY mv.monto_total DESC) as ranking_ventas,
+    PERCENT_RANK() OVER (ORDER BY mv.monto_total) as percentil_ventas,
+    mv.monto_total / SUM(mv.monto_total) OVER () * 100 as porcentaje_total
+FROM vendedores ve
+INNER JOIN metricas_vendedor mv ON ve.id = mv.vendedor_id
+ORDER BY mv.monto_total DESC;</div>
+            </div>
+        </section>
+
+        <section>
+            <h2>5. Mejores Prácticas y Optimización</h2>
+            <div class="tip">
+                <h3>Recomendaciones Generales</h3>
+                <ul>
+                    <li>Usa índices apropiados para mejorar el rendimiento</li>
+                    <li>Evita SELECT * y selecciona solo las columnas necesarias</li>
+                    <li>Considera el uso de CTEs para mejor legibilidad</li>
+                    <li>Optimiza JOINs usando las claves correctas</li>
+                    <li>Usa EXPLAIN ANALYZE para entender el plan de ejecución</li>
+                </ul>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="tip">
+            <h3>Recursos Adicionales</h3>
+            <ul>
+                <li>Documentación oficial de PostgreSQL</li>
+                <li>Ejercicios prácticos en línea</li>
+                <li>Comunidades SQL para resolver dudas</li>
+            </ul>
+        </div>
+    </footer>
+</body>
+</html>
